@@ -827,6 +827,32 @@ def _check_icons_manifest(v: Dict[str, str]) -> Tuple[bool, str]:
     return passed, "; ".join(findings)
 
 
+def _check_icon_mismatch(v: Dict[str, str]) -> Tuple[bool, str]:
+    """TC-1140.4.1.2.5 — Mismatch between app color and outline icon.
+
+    Passes only when BOTH:
+      - TC-1140.4.1.2.1 (color icon) passes
+      - TC-1140.4.1.2.2 (outline icon) passes
+    Fails otherwise.
+    """
+    color_pass, color_reason = _check_color_icon(v)
+    outline_pass, outline_reason = _check_outline_icon(v)
+
+    if color_pass and outline_pass:
+        return True, (
+            "No mismatch detected: "
+            "TC-1140.4.1.2.1 (color icon) and TC-1140.4.1.2.2 (outline icon) both PASS."
+        )
+
+    reasons: List[str] = []
+    if not color_pass:
+        reasons.append(f"TC-1140.4.1.2.1 failed ({color_reason})")
+    if not outline_pass:
+        reasons.append(f"TC-1140.4.1.2.2 failed ({outline_reason})")
+
+    return False, "Mismatch detected between color and outline icon checks: " + "; ".join(reasons)
+
+
 # Master list of icon-related test cases (extend freely)
 ICON_TEST_CASES: List[dict] = [
     _tc(
@@ -861,6 +887,16 @@ ICON_TEST_CASES: List[dict] = [
             "The app package (.zip) manifest.json must declare both icons under the 'icons' "
             "section: \"color\" (pointing to the color PNG) and \"outline\" (pointing to the "
             "outline PNG). Add the missing entry to manifest.json and resubmit the package."
+        ),
+    ),
+    _tc(
+        "1140.4.1.2.5",
+        "Mismatch between app color and outline icon",
+        _check_icon_mismatch,
+        recommendation=(
+            "Ensure both icon validations pass together: "
+            "TC-1140.4.1.2.1 (color icon) and TC-1140.4.1.2.2 (outline icon). "
+            "Fix whichever icon check is failing and resubmit."
         ),
     ),
 ]
