@@ -1,9 +1,9 @@
 {
-  "task": "Metadata TC 16-30 - {{APP_NAME}} - {{VALIDATION_ID}}",
+  "task": "Metadata TC 16-30 - Finius - 4885826",
   "steps": [
-     {
-      "title": "Navigate to {{TEAMS_URL}}, enter the provided email {{TEAMS_ID}} and password {{TEAMS_PASSWORD}}, and complete the sign-in process.",
-      "details": "Navigate to {{TEAMS_URL}}, enter the provided email {{TEAMS_ID}} and password {{TEAMS_PASSWORD}}, and complete the sign-in process.",
+    {
+      "title": "Navigate to https://teams.microsoft.com/v2/, enter the provided email admin@M365x48062851.onmicrosoft.com and password u}6kB=hB693I]#T0D7}(lc#j0oX$9MrM, and complete the sign-in process.",
+      "details": "Navigate to https://teams.microsoft.com/v2/, enter the provided email admin@M365x48062851.onmicrosoft.com and password u}6kB=hB693I]#T0D7}(lc#j0oX$9MrM, and complete the sign-in process.",
       "enabled": true,
       "open": false,
       "agent_name": ""
@@ -23,15 +23,15 @@
       "agent_name": ""
     },
     {
-      "title": "From the search results, look for '{{APP_NAME}}' app then click on bold text name on the app card , dont click on open button.",
-      "details": "From the search results, look for '{{APP_NAME}}' app then click on bold text name on the app card , dont click on open button.",
+      "title": "From the search results, look for 'Finius' app then click on bold text name on the app card , dont click on open button.",
+      "details": "From the search results, look for 'Finius' app then click on bold text name on the app card , dont click on open button.",
       "enabled": true,
       "open": false,
       "agent_name": ""
     },
-     {
-      "title": "Short description- '{{short_desc}}' and long description-'{{long_desc}}', use these values for testing of other test cases.",
-      "details": "Short description- '{{short_desc}}' and long description-'{{long_desc}}', use these values for testing of other test cases.",
+    {
+      "title": "Short description- 'Finius - Your friendly FinOps & DevOps AI assistant for cloud cost management' and long description-'Finius is a proactive, real-time AI agent designed for Azure cost optimization. It engages the right users - engineers, DevOps, FinOps - in Microsoft Teams exactly when action is needed, delivering targeted alerts, explanations, and one-click fixes directly within developers’ working tools. Finius answers questions, updates system settings (\"Don't bother me with this type of resources for the next week\", changes to CLI, etc.), and enables instant actions, all through conversation, so teams who build and innovate can prevent waste in real time, not after the bill arrives. This seamless, bot-driven experience ensures savings, continuous control, and full governance, without leaving daily tools workflows. This app requires an active Atmoz account to use. To get started, visit https://atmoz.co. For help or support, visit https://atmoz.co/support.', use these values for testing of other test cases.",
+      "details": "Short description- 'Finius - Your friendly FinOps & DevOps AI assistant for cloud cost management' and long description-'Finius is a proactive, real-time AI agent designed for Azure cost optimization. It engages the right users - engineers, DevOps, FinOps - in Microsoft Teams exactly when action is needed, delivering targeted alerts, explanations, and one-click fixes directly within developers’ working tools. Finius answers questions, updates system settings (\"Don't bother me with this type of resources for the next week\", changes to CLI, etc.), and enables instant actions, all through conversation, so teams who build and innovate can prevent waste in real time, not after the bill arrives. This seamless, bot-driven experience ensures savings, continuous control, and full governance, without leaving daily tools workflows. This app requires an active Atmoz account to use. To get started, visit https://atmoz.co. For help or support, visit https://atmoz.co/support.', use these values for testing of other test cases.",
       "enabled": true,
       "open": false,
       "agent_name": ""

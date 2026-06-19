@@ -1,9 +1,9 @@
 {
-  "task": "Metadata TC 16-30 - {{APP_NAME}} - {{VALIDATION_ID}}",
+  "task": "Metadata TC 16-30 - Revo - 5475886",
   "steps": [
-     {
-      "title": "Navigate to {{TEAMS_URL}}, enter the provided email {{TEAMS_ID}} and password {{TEAMS_PASSWORD}}, and complete the sign-in process.",
-      "details": "Navigate to {{TEAMS_URL}}, enter the provided email {{TEAMS_ID}} and password {{TEAMS_PASSWORD}}, and complete the sign-in process.",
+    {
+      "title": "Navigate to https://teams.microsoft.com/v2/, enter the provided email admin@M365x48062851.onmicrosoft.com and password u}6kB=hB693I]#T0D7}(lc#j0oX$9MrM, and complete the sign-in process.",
+      "details": "Navigate to https://teams.microsoft.com/v2/, enter the provided email admin@M365x48062851.onmicrosoft.com and password u}6kB=hB693I]#T0D7}(lc#j0oX$9MrM, and complete the sign-in process.",
       "enabled": true,
       "open": false,
       "agent_name": ""
@@ -23,15 +23,15 @@
       "agent_name": ""
     },
     {
-      "title": "From the search results, look for '{{APP_NAME}}' app then click on bold text name on the app card , dont click on open button.",
-      "details": "From the search results, look for '{{APP_NAME}}' app then click on bold text name on the app card , dont click on open button.",
+      "title": "From the search results, look for 'Revo' app then click on bold text name on the app card , dont click on open button.",
+      "details": "From the search results, look for 'Revo' app then click on bold text name on the app card , dont click on open button.",
       "enabled": true,
       "open": false,
       "agent_name": ""
     },
-     {
-      "title": "Short description- '{{short_desc}}' and long description-'{{long_desc}}', use these values for testing of other test cases.",
-      "details": "Short description- '{{short_desc}}' and long description-'{{long_desc}}', use these values for testing of other test cases.",
+    {
+      "title": "Short description- 'AI-powered assistant for project management' and long description-'Revo is an AI assistant for work that learns your business context from your emails, meetings, documents, and tools, so it can draft accurate replies and handle follow up tasks for you. It’s built to do more than just answer questions: it can spot action items and then draft replies, create tickets, update records, and more, using the real context it already knows. So it’s like an executive assistant that keeps a living memory of your company and uses it to help you respond faster and get work done.', use these values for testing of other test cases.",
+      "details": "Short description- 'AI-powered assistant for project management' and long description-'Revo is an AI assistant for work that learns your business context from your emails, meetings, documents, and tools, so it can draft accurate replies and handle follow up tasks for you. It’s built to do more than just answer questions: it can spot action items and then draft replies, create tickets, update records, and more, using the real context it already knows. So it’s like an executive assistant that keeps a living memory of your company and uses it to help you respond faster and get work done.', use these values for testing of other test cases.",
       "enabled": true,
       "open": false,
       "agent_name": ""
