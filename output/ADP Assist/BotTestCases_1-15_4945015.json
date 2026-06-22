@@ -1,5 +1,5 @@
 {
-  "task": "BotTestCases 1-15 - Skysecure: RootIQ - 5391178",
+  "task": "BotTestCases 1-15 - ADP Assist - 4945015",
   "steps": [
     {
       "title": "Navigate to https://teams.microsoft.com/v2/, enter the provided email admin@M365x48062851.onmicrosoft.com and password u}6kB=hB693I]#T0D7}(lc#j0oX$9MrM, and complete the sign-in process.",
@@ -23,8 +23,8 @@
       "agent_name": ""
     },
     {
-      "title": "From the search results, look for 'Skysecure: RootIQ' app and click on the add button if it does'nt have open button. then after loaded click on open button to open its chat page.",
-      "details": "From the search results, look for 'Skysecure: RootIQ' app and click on the add button if it does'nt have open button. then after loaded click on open button to open its chat page.",
+      "title": "From the search results, look for 'ADP Assist' app and click on the add button if it does'nt have open button. then after loaded click on open button to open its chat page.",
+      "details": "From the search results, look for 'ADP Assist' app and click on the add button if it does'nt have open button. then after loaded click on open button to open its chat page.",
       "enabled": true,
       "open": false,
       "agent_name": ""

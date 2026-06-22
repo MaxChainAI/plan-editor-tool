@@ -1,5 +1,5 @@
 """
-Plan Editor Tool for Magentic UI
+Plan Generator Tool for CUA
 
 Generates ready-to-import plan JSON files from templates by replacing
 placeholders (e.g. {{VALIDATION_ID}}, {{APP_NAME}}) with actual values.

@@ -1,17 +1,18 @@
 {
-  "validation_id": "5391178",
-  "app_name": "Skysecure: RootIQ",
+  "validation_id": "4945015",
+  "app_name": "ADP Assist",
   "summary": {
     "total": 3,
-    "pass": 1,
-    "fail": 2,
+    "pass": 0,
+    "fail": 3,
     "skip": 0
   },
   "test_cases": [
     {
       "tc_id": "1140.4.1.2.1",
       "title": "Incorrect dimensions of color icon",
-      "result": "PASS"
+      "result": "FAIL",
+      "recommendation": "The color version of your icon must be 192x192 pixels. Your icon symbol can be any color or colors, but it must sit on a solid or fully transparent square background. Every pixel's alpha must be either 0 (fully transparent) or 255 (fully opaque) -- no semi-transparent pixels allowed. Re-export as a 192x192 square PNG and resubmit the package."
     },
     {
       "tc_id": "1140.4.1.2.2",

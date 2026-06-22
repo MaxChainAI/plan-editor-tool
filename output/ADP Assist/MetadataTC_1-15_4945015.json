@@ -1,5 +1,5 @@
 {
-  "task": "Metadata TC 1-15 - Skysecure: RootIQ - 5391178",
+  "task": "Metadata TC 1-15 - ADP Assist - 4945015",
   "steps": [
     {
       "title": "Navigate to https://teams.microsoft.com/v2/, enter the provided email admin@M365x48062851.onmicrosoft.com and password u}6kB=hB693I]#T0D7}(lc#j0oX$9MrM, and complete the sign-in process.",
@@ -23,8 +23,8 @@
       "agent_name": ""
     },
     {
-      "title": "From the search results, look for 'Skysecure: RootIQ' app then click on bold text name on the app card , dont click on open button.",
-      "details": "From the search results, look for 'Skysecure: RootIQ' app then click on bold text name on the app card , dont click on open button.",
+      "title": "From the search results, look for 'ADP Assist' app then click on bold text name on the app card , dont click on open button.",
+      "details": "From the search results, look for 'ADP Assist' app then click on bold text name on the app card , dont click on open button.",
       "enabled": true,
       "open": false,
       "agent_name": ""
@@ -107,8 +107,8 @@
       "agent_name": ""
     },
     {
-      "title": "Open this Url another tab -https://msteamspmewebapi.azurewebsites.netabc23505-8c9c-4b8d-9d5d-90d6679e7b94/1152921505701098894\nExtract values from the \"shortDescription\" key and consider it as short description and extract values from the \"fullDescription\" key and consider it as long description.\nrefer this for the all the given test cases and go back to the tab where https://teams.microsoft.com/v2/ is opened.",
-      "details": "Open this Url another tab -https://msteamspmewebapi.azurewebsites.netabc23505-8c9c-4b8d-9d5d-90d6679e7b94/1152921505701098894\nExtract values from the \"shortDescription\" key and consider it as short description and extract values from the \"fullDescription\" key and consider it as long description.\nrefer this for the all the given test cases and go back to the tab where https://teams.microsoft.com/v2/ is opened.",
+      "title": "Open this Url another tab -https://msteamspmewebapi.azurewebsites.net{{PRODUCT_ID}}/{{SUBMISSION_ID}}\nExtract values from the \"shortDescription\" key and consider it as short description and extract values from the \"fullDescription\" key and consider it as long description.\nrefer this for the all the given test cases and go back to the tab where https://teams.microsoft.com/v2/ is opened.",
+      "details": "Open this Url another tab -https://msteamspmewebapi.azurewebsites.net{{PRODUCT_ID}}/{{SUBMISSION_ID}}\nExtract values from the \"shortDescription\" key and consider it as short description and extract values from the \"fullDescription\" key and consider it as long description.\nrefer this for the all the given test cases and go back to the tab where https://teams.microsoft.com/v2/ is opened.",
       "enabled": true,
       "open": false,
       "agent_name": ""

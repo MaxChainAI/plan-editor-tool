@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Icon Test Report -- Skysecure: RootIQ</title>
+  <title>Icon Test Report -- ADP Assist</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #222; }
@@ -30,8 +30,8 @@
     .card.skip .num { color: #7a7a7a; }
     .card.total .num { color: #0078d4; }
     .progress-bar { background: #e0e0e0; border-radius: 6px; height: 10px; margin-bottom: 28px; overflow: hidden; }
-    .progress-bar .seg-pass { background: #107c10; height: 100%; width: 33%; float: left; }
-    .progress-bar .seg-fail { background: #c50f1f; height: 100%; width: 66%; float: left; }
+    .progress-bar .seg-pass { background: #107c10; height: 100%; width: 0%; float: left; }
+    .progress-bar .seg-fail { background: #c50f1f; height: 100%; width: 100%; float: left; }
     table {
       width: 100%; border-collapse: collapse; background: #fff;
       border-radius: 10px; overflow: hidden;
@@ -59,13 +59,13 @@
 <body>
   <header>
     <h1>Icon Test Case Report</h1>
-    <p>Skysecure: RootIQ &nbsp;|&nbsp; Validation ID: 5391178 &nbsp;|&nbsp; Generated: 2026-06-12 14:54:32</p>
+    <p>ADP Assist &nbsp;|&nbsp; Validation ID: 4945015 &nbsp;|&nbsp; Generated: 2026-06-16 15:23:25</p>
   </header>
   <div class="container">
     <div class="summary-cards">
       <div class="card total"><div class="num">3</div><div class="lbl">Total</div></div>
-      <div class="card pass" ><div class="num">1</div><div class="lbl">Pass</div></div>
-      <div class="card fail" ><div class="num">2</div><div class="lbl">Fail</div></div>
+      <div class="card pass" ><div class="num">0</div><div class="lbl">Pass</div></div>
+      <div class="card fail" ><div class="num">3</div><div class="lbl">Fail</div></div>
       <div class="card skip" ><div class="num">0</div><div class="lbl">Skip</div></div>
     </div>
     <div class="progress-bar">
@@ -83,24 +83,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="row-pass">
+        <tr class="row-fail">
           <td><code>TC-1140.4.1.2.1</code></td>
           <td>Incorrect dimensions of color icon</td>
-          <td>Dimensions: 192x192 px (PASS); Background: solid / fully opaque (PASS)</td>
-          <td><span class="na">N/A</span></td>
-          <td><span class="badge badge-pass">PASS</span></td>
+          <td>Dimensions unavailable (SMP data missing); Background type unavailable (Pillow not installed or SMP data missing)</td>
+          <td><span class="rec">The color version of your icon must be 192x192 pixels. Your icon symbol can be any color or colors, but it must sit on a solid or fully transparent square background. Every pixel&#x27;s alpha must be either 0 (fully transparent) or 255 (fully opaque) -- no semi-transparent pixels allowed. Re-export as a 192x192 square PNG and resubmit the package.</span></td>
+          <td><span class="badge badge-fail">FAIL</span></td>
         </tr>
         <tr class="row-fail">
           <td><code>TC-1140.4.1.2.2</code></td>
           <td>Outline icon not transparent</td>
-          <td>Dimensions: 32x32 px (PASS); Color: non-compliant -- 0 semi-transparent pixel(s) detected; outline icon must be white-on-transparent or transparent-on-white (FAIL); Padding: none detected (symbol 32x32px (best-effort); padding L:0 T:0 R:0 B:0) (PASS)</td>
+          <td>Dimensions unavailable (SMP data missing); Color type unavailable (Pillow not installed or SMP data missing)</td>
           <td><span class="rec">The outline icon must be exactly 32x32 pixels. It can be white with a transparent background or transparent with a white background -- no other colors or semi-transparent pixels are allowed. The icon symbol must not have any extra padding around it; the content should fill the canvas without excessive surrounding empty space. Re-export as a 32x32 square PNG and resubmit the package.</span></td>
           <td><span class="badge badge-fail">FAIL</span></td>
         </tr>
         <tr class="row-fail">
           <td><code>TC-1140.4.1.2.4</code></td>
           <td>App package does not contain both icons</td>
-          <td>manifest.json could not be parsed (FAIL)</td>
+          <td>icons.color entry missing from manifest.json (FAIL); icons.outline entry missing from manifest.json (FAIL)</td>
           <td><span class="rec">The app package (.zip) manifest.json must declare both icons under the &#x27;icons&#x27; section: &quot;color&quot; (pointing to the color PNG) and &quot;outline&quot; (pointing to the outline PNG). Add the missing entry to manifest.json and resubmit the package.</span></td>
           <td><span class="badge badge-fail">FAIL</span></td>
         </tr>
