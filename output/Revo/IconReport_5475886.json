@@ -1,0 +1,36 @@
+{
+  "validation_id": "5475886",
+  "app_name": "Revo",
+  "summary": {
+    "total": 4,
+    "pass": 0,
+    "fail": 4,
+    "skip": 0
+  },
+  "test_cases": [
+    {
+      "tc_id": "1140.4.1.2.1",
+      "title": "Incorrect dimensions of color icon",
+      "result": "FAIL",
+      "recommendation": "The color version of your icon must be 192x192 pixels. Your icon symbol can be any color or colors, but it must sit on a solid or fully transparent square background. Every pixel's alpha must be either 0 (fully transparent) or 255 (fully opaque) -- no semi-transparent pixels allowed. Re-export as a 192x192 square PNG and resubmit the package."
+    },
+    {
+      "tc_id": "1140.4.1.2.2",
+      "title": "Outline icon not transparent",
+      "result": "FAIL",
+      "recommendation": "The outline icon must be exactly 32x32 pixels. It can be white with a transparent background or transparent with a white background -- no other colors or semi-transparent pixels are allowed. The icon symbol must not have any extra padding around it; the content should fill the canvas without excessive surrounding empty space. Re-export as a 32x32 square PNG and resubmit the package."
+    },
+    {
+      "tc_id": "1140.4.1.2.4",
+      "title": "App package does not contain both icons",
+      "result": "FAIL",
+      "recommendation": "The app package (.zip) manifest.json must declare both icons under the 'icons' section: \"color\" (pointing to the color PNG) and \"outline\" (pointing to the outline PNG). Add the missing entry to manifest.json and resubmit the package."
+    },
+    {
+      "tc_id": "1140.4.1.2.5",
+      "title": "Mismatch between app color and outline icon",
+      "result": "FAIL",
+      "recommendation": "Ensure both icon validations pass together: TC-1140.4.1.2.1 (color icon) and TC-1140.4.1.2.2 (outline icon). Fix whichever icon check is failing and resubmit."
+    }
+  ]
+}

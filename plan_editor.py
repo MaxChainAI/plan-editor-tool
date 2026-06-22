@@ -1,5 +1,5 @@
 """
-Plan Generator Tool for CUA
+Plan Generator for Magentic UI
 
 Generates ready-to-import plan JSON files from templates by replacing
 placeholders (e.g. {{VALIDATION_ID}}, {{APP_NAME}}) with actual values.
@@ -43,7 +43,7 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
 if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
-PLACEHOLDER_RE = re.compile(r"\{\{([A-Z_][A-Z0-9_]*)\}\}")
+PLACEHOLDER_RE = re.compile(r"\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}")
 
 # Regex to parse ADO work-item URLs like:
 #   https://domoreexp.visualstudio.com/MSTeams/_workitems/edit/4941424/?view=edit
@@ -93,6 +93,18 @@ def _html_to_text(html: str) -> str:
     parser = _HTMLTextExtractor()
     parser.feed(html)
     return parser.get_text()
+
+
+def _extract_labeled_block(text: str, label: str, next_labels: List[str]) -> str:
+    """Extract text after 'Label:' until next known label or end of text."""
+    if not text:
+        return ""
+    stop = "|".join(re.escape(x) for x in next_labels)
+    pattern = rf"{re.escape(label)}\s*:\s*(.*?)(?=\n(?:{stop})\s*:|\Z)"
+    m = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+    if not m:
+        return ""
+    return re.sub(r"\s+", " ", m.group(1)).strip()
 
 
 # ── Environment file loading ────────────────────────────────────────────
@@ -218,6 +230,8 @@ def extract_fields_from_work_item(wi: dict) -> Dict[str, str]:
       APP_NAME        — from Description "AppName: ..." line
       PRODUCT_ID      — from AppSpecificData "Product Id: ..." (fallback: Custom.AppID)
       SUBMISSION_ID   — from AppSpecificData "SubmissionId: ..."
+            short_desc      — from Description "Short Description: ..." block
+            long_desc       — from Description "Long Description: ..." block
     """
     fields = wi.get("fields", {})
     result: Dict[str, str] = {}
@@ -234,6 +248,25 @@ def extract_fields_from_work_item(wi: dict) -> Dict[str, str]:
         if m:
             app_name = m.group(1).strip().split("\n")[0].strip()
             result["APP_NAME"] = app_name
+
+        # Extract short/long description blocks from the Description field.
+        short_desc = _extract_labeled_block(
+            desc_text,
+            "Short Description",
+            ["Long Description", "App Capability", "AppID", "Manifest Version", "Languages"],
+        )
+        if short_desc:
+            result["short_desc"] = short_desc
+            result["SHORT_DESC"] = short_desc
+
+        long_desc = _extract_labeled_block(
+            desc_text,
+            "Long Description",
+            ["App Capability", "AppID", "Manifest Version", "Languages"],
+        )
+        if long_desc:
+            result["long_desc"] = long_desc
+            result["LONG_DESC"] = long_desc
 
     # Fallback: derive APP_NAME from Title (e.g. "Forrester AI-Dormant" → "Forrester AI")
     if "APP_NAME" not in result:
@@ -274,6 +307,23 @@ def extract_fields_from_work_item(wi: dict) -> Dict[str, str]:
                 result["SUBMISSION_ID"] = str(val).strip()
                 break
 
+    # Fallbacks for description fields from direct custom fields.
+    if "short_desc" not in result:
+        for field_name in ("Custom.ShortDescription", "Custom.ShortDesc"):
+            val = str(fields.get(field_name, "")).strip()
+            if val:
+                result["short_desc"] = val
+                result["SHORT_DESC"] = val
+                break
+
+    if "long_desc" not in result:
+        for field_name in ("Custom.LongDescription", "Custom.LongDesc"):
+            val = str(fields.get(field_name, "")).strip()
+            if val:
+                result["long_desc"] = val
+                result["LONG_DESC"] = val
+                break
+
     return result
 
 
@@ -290,7 +340,9 @@ def fetch_and_extract(ado_url: str, pat: str) -> Dict[str, str]:
         print(f"  Extracted → {k} = {v}")
 
     # Warn about fields we couldn't extract
-    expected_from_ado = {"VALIDATION_ID", "APP_NAME", "PRODUCT_ID", "SUBMISSION_ID"}
+    expected_from_ado = {
+        "VALIDATION_ID", "APP_NAME", "PRODUCT_ID", "SUBMISSION_ID", "short_desc", "long_desc"
+    }
     missing = expected_from_ado - set(extracted.keys())
     if missing:
         print(f"  Warning: Could not auto-extract: {', '.join(sorted(missing))}")
@@ -827,6 +879,32 @@ def _check_icons_manifest(v: Dict[str, str]) -> Tuple[bool, str]:
     return passed, "; ".join(findings)
 
 
+def _check_icon_mismatch(v: Dict[str, str]) -> Tuple[bool, str]:
+    """TC-1140.4.1.2.5 — Mismatch between app color and outline icon.
+
+    Passes only when BOTH:
+      - TC-1140.4.1.2.1 (color icon) passes
+      - TC-1140.4.1.2.2 (outline icon) passes
+    Fails otherwise.
+    """
+    color_pass, color_reason = _check_color_icon(v)
+    outline_pass, outline_reason = _check_outline_icon(v)
+
+    if color_pass and outline_pass:
+        return True, (
+            "No mismatch detected: "
+            "TC-1140.4.1.2.1 (color icon) and TC-1140.4.1.2.2 (outline icon) both PASS."
+        )
+
+    reasons: List[str] = []
+    if not color_pass:
+        reasons.append(f"TC-1140.4.1.2.1 failed ({color_reason})")
+    if not outline_pass:
+        reasons.append(f"TC-1140.4.1.2.2 failed ({outline_reason})")
+
+    return False, "Mismatch detected between color and outline icon checks: " + "; ".join(reasons)
+
+
 # Master list of icon-related test cases (extend freely)
 ICON_TEST_CASES: List[dict] = [
     _tc(
@@ -861,6 +939,16 @@ ICON_TEST_CASES: List[dict] = [
             "The app package (.zip) manifest.json must declare both icons under the 'icons' "
             "section: \"color\" (pointing to the color PNG) and \"outline\" (pointing to the "
             "outline PNG). Add the missing entry to manifest.json and resubmit the package."
+        ),
+    ),
+    _tc(
+        "1140.4.1.2.5",
+        "Mismatch between app color and outline icon",
+        _check_icon_mismatch,
+        recommendation=(
+            "Ensure both icon validations pass together: "
+            "TC-1140.4.1.2.1 (color icon) and TC-1140.4.1.2.2 (outline icon). "
+            "Fix whichever icon check is failing and resubmit."
         ),
     ),
 ]
@@ -1095,7 +1183,7 @@ def save_html_report(results: List[dict], validation_id: str,
       </tbody>
     </table>
   </div>
-  <footer>Generated by Plan Editor Tool</footer>
+    <footer>Generated by Plan Generator</footer>
 </body>
 </html>
 """
@@ -1314,10 +1402,21 @@ def load_template(path: str) -> dict:
 
 
 def process_template(template: dict, variables: Dict[str, str]) -> dict:
-    """Deep-replace all string values in the template dict."""
-    raw = json.dumps(template, ensure_ascii=False)
-    filled = replace_placeholders(raw, variables)
-    return json.loads(filled)
+    """Deep-replace all string values in the template dict safely.
+
+    Avoids JSON text round-trips so values containing quotes/newlines
+    cannot corrupt JSON decoding.
+    """
+    def _walk(node):
+        if isinstance(node, dict):
+            return {k: _walk(v) for k, v in node.items()}
+        if isinstance(node, list):
+            return [_walk(x) for x in node]
+        if isinstance(node, str):
+            return replace_placeholders(node, variables)
+        return node
+
+    return _walk(template)
 
 
 def save_output(data: dict, path: str, app_name: str = "") -> None:
@@ -1488,7 +1587,7 @@ def cmd_generate(template_path: str, var_pairs: List[str], output_path: str,
 
 
 def cmd_quick_generate(validation_id: str, pat: Optional[str] = None,
-                       templates_dir: str = "templates") -> str:
+                       templates_dir: str = "templates") -> Tuple[str, List[str]]:
     """Quick mode: just a validation ID → generate JSON for ALL templates.
 
     Constructs the ADO URL from defaults, fetches the work item, auto-fills
@@ -1496,7 +1595,7 @@ def cmd_quick_generate(validation_id: str, pat: Optional[str] = None,
     Prompts for TEAMS_ID, TEAMS_PASSWORD (and confirms TEAMS_URL, SMP_API_URL defaults).
     Saves each output to output/<app_name>/<template_name>_<VALIDATION_ID>.json.
     
-    Returns the APP_NAME for use in upload operations.
+    Returns a tuple (app_name, list_of_generated_file_paths) for use in upload operations.
     """
     tdir = Path(templates_dir)
     templates = sorted(tdir.glob("*.json"))
@@ -1574,19 +1673,26 @@ def cmd_quick_generate(validation_id: str, pat: Optional[str] = None,
     save_test_report(tc_results, validation_id=validation_id, app_name=variables.get("APP_NAME", ""))
     save_html_report(tc_results, validation_id=validation_id, app_name=variables.get("APP_NAME", ""))
 
-    # Process every template
+    # Process every template and track generated files
     app_name = variables.get("APP_NAME", "")
     safe_app_name = sanitize_app_name(app_name) if app_name else ""
     print(f"\nProcessing {len(templates)} template(s)...\n")
+    generated_files: List[str] = []
     for tpl_path in templates:
         template = load_template(str(tpl_path))
         result = process_template(template, variables)
         stem = tpl_path.stem  # e.g. "MetadataTC_1-15"
         out_path = f"output/{stem}_{validation_id}.json"
         save_output(result, out_path, app_name=app_name)
+        # Track the actual filesystem path for upload
+        if app_name:
+            final_path = os.path.join("output", safe_app_name, f"{stem}_{validation_id}.json")
+        else:
+            final_path = out_path
+        generated_files.append(os.path.abspath(final_path))
 
     print(f"\nDone! Generated {len(templates)} plan(s) in output/{safe_app_name}/ folder.")
-    return safe_app_name
+    return safe_app_name, generated_files
 
 
 def cmd_report(ado_url_or_id: str, pat: Optional[str] = None) -> None:
@@ -1666,7 +1772,7 @@ def main() -> None:
     load_env_file()
     
     parser = argparse.ArgumentParser(
-        description="Plan Editor Tool — Generate Magentic UI plan JSON from templates",
+        description="Plan Generator — Generate Magentic UI plan JSON from templates",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -1833,17 +1939,17 @@ See .env.template for all configuration options.
 
     # Quick mode: just a validation ID
     if args.validation_id and not args.interactive and not args.template:
-        app_name = cmd_quick_generate(args.validation_id, args.pat)
+        app_name, generated_files = cmd_quick_generate(args.validation_id, args.pat)
         if args.upload:
             uid = _require_upload_user()
-            # Upload from app-specific folder
-            upload_dir = os.path.join("output", app_name) if app_name else "output"
-            upload_all_outputs(
-                output_dir=upload_dir,
-                user_id=uid,
-                server_url=args.server_url,
-                dry_run=args.dry_run,
-            )
+            # Upload only the files we just generated (not old files in the folder)
+            if generated_files:
+                upload_selected_files(
+                    files=generated_files,
+                    user_id=uid,
+                    server_url=args.server_url,
+                    dry_run=args.dry_run,
+                )
         return
 
     if args.interactive:
