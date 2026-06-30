@@ -57,6 +57,11 @@ DEFAULTS: Dict[str, str] = {
     "SMP_API_URL": os.environ.get("SMP_API_URL", "https://msteamspmewebapi.azurewebsites.net"),
 }
 
+# Credential placeholders that must NEVER be substituted. They stay as literal
+# {{TEAMS_ID}} / {{TEAMS_PASSWORD}} in output so secrets are never baked into
+# plans or uploaded. CLI --var and prompts for these are ignored.
+CREDENTIAL_PLACEHOLDERS = {"TEAMS_ID", "TEAMS_PASSWORD"}
+
 # ── Azure Key Vault PAT configuration ───────────────────────────────────
 # When --pat is NOT provided, the PAT is fetched from Azure Key Vault.
 # Requires: pip install azure-identity azure-keyvault-secrets
@@ -1497,6 +1502,8 @@ def cmd_interactive(template_path: str, output_path: Optional[str],
 
     variables: Dict[str, str] = {}
     for p in placeholders:
+        if p in CREDENTIAL_PLACEHOLDERS:
+            continue  # leave {{TEAMS_ID}}/{{TEAMS_PASSWORD}} as-is
         # Priority: ADO-fetched/SMP-fetched > DEFAULTS
         default = prefill.get(p, "")
         prompt = f"  {p}"
@@ -1562,12 +1569,16 @@ def cmd_generate(template_path: str, var_pairs: List[str], output_path: str,
             print(f"ERROR: Invalid --var format: '{pair}'. Use KEY=VALUE.", file=sys.stderr)
             sys.exit(1)
         key, value = pair.split("=", 1)
-        variables[key.strip()] = value.strip()
+        key = key.strip()
+        if key in CREDENTIAL_PLACEHOLDERS:
+            print(f"  Ignoring --var {key}: kept as literal {{{{{key}}}}}.")
+            continue
+        variables[key] = value.strip()
 
     # Check for unfilled placeholders
     raw = json.dumps(template, ensure_ascii=False)
     all_keys = find_placeholders(raw)
-    missing = [k for k in all_keys if k not in variables]
+    missing = [k for k in all_keys if k not in variables and k not in CREDENTIAL_PLACEHOLDERS]
     if missing:
         print(f"WARNING: These placeholders have no value and will remain as-is: {missing}",
               file=sys.stderr)
@@ -1619,12 +1630,12 @@ def cmd_quick_generate(validation_id: str, pat: Optional[str] = None,
     variables.update(ado_vars)
 
     # Prompt for values not available from ADO
+    # TEAMS_ID / TEAMS_PASSWORD are intentionally NOT prompted — they stay as
+    # literal {{TEAMS_ID}} / {{TEAMS_PASSWORD}} placeholders in the output.
     print("\n── Provide remaining values ──")
     for key, prompt_label in [
         ("TEAMS_URL", "Teams URL"),
         ("SMP_API_URL", "SMP API URL"),
-        ("TEAMS_ID", "Teams login ID (email)"),
-        ("TEAMS_PASSWORD", "Teams login password"),
     ]:
         current = variables.get(key, "")
         if current:
@@ -1660,7 +1671,7 @@ def cmd_quick_generate(validation_id: str, pat: Optional[str] = None,
     for tpl_path in templates:
         raw = json.dumps(load_template(str(tpl_path)), ensure_ascii=False)
         for ph in find_placeholders(raw):
-            if ph not in variables:
+            if ph not in variables and ph not in CREDENTIAL_PLACEHOLDERS:
                 unfilled_keys.add(ph)
     if unfilled_keys:
         print(f"  WARNING — still unfilled: {', '.join(sorted(unfilled_keys))}")

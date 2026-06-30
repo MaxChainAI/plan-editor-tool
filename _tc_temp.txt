@@ -1,0 +1,76 @@
+Test Case ID: 1140.4.3.3.18
+Test Case Name: Bot does not provide a valid response to the help command when the user has not logged into the app. Ensure your bot responds to the "help" command even if the user hasn't logged in. It must offer users a way forward or allow them to access help content related to the bot's usage.
+Objective of this Test Case for Agent:
+Verify that the bot remains responsive to the "help" command regardless of authentication status. The bot must not block help content behind login. Hyperlinks included in the help response are allowed; if the cursor changes to a hand icon when hovered over them, this indicates external redirection and is a PASS scenario.
+
+Updated Logic
+
+First, check whether the bot supports an in‑chat logout/sign out command and review the bot's response.
+If no logout workflow is supported, the result should be WARNING (capture the bot's stated reason if available).
+If logout is supported, complete the bot's logout workflow, then validate the help response while logged out (don't prematurely conclude "no help content"—evaluate the actual post‑logout help response).
+Detailed Execution Steps for Agent:
+
+Check for In‑Chat Logout/Signout Support (NEW):
+In personal chat, try: logout, sign out, log out, signout.
+Optionally, send help or open the command menu to see if a logout option exists.
+Observe:
+
+If a logout workflow is provided → proceed to Step 2.
+If the bot states logout is not supported or provides no actionable flow → mark WARNING and record the reason; stop.
+
+Execute the Bot's Logout Workflow (If Supported):
+Follow the bot's steps to sign out of the bot/app session.
+Confirm the bot acknowledges logout (e.g., "You're signed out of this bot").
+Ensure this is bot‑level logout (not a Teams sign‑out).
+
+Send Help Command While Logged Out:
+Type help in personal chat.
+Observe whether help content is provided without forcing login.
+Verify Help Content:
+Ensure the response explains functionality, lists available commands, or includes a Sign In option as guidance.
+Hyperlinks are allowed; if hover shows a hand cursor, treat as compliant.
+
+Identify Dead Ends:
+The bot must not stay silent.
+The bot must not reply only "Please login to continue."
+For Non‑Integrated accounts, a single way‑forward guidance message qualifies as PASS.
+
+Screenshot Capture (evidence):
+FIRST, make sure you are inside the bot's 1:1 chat conversation, NOT on the Teams Apps store / app listing / install page. If the current view is the Apps catalog or the app's install/details page, click Open to enter the bot chat before typing anything. The Apps store/listing page must NEVER be used as this test's evidence.
+LOGOUT attempt (interaction — use the deterministic capture tool): Locate the chat input field and call capture_input_responses with input_field_id = the chat field and inputs = the logout command(s) under test (e.g., ["logout"], then ["sign out"] / ["log out"] / ["signout"] only if needed). Each call types the input, submits it, waits for the bot's RESPONSE to fully render and settle, and captures the settled response. The evidence frame must show the bot's settled answer (the logout flow it offers, or its statement that logout is unsupported), NOT the moment of typing.
+WARNING path: If no in‑chat logout workflow is supported (bot states it is unsupported, returns an error, or gives no actionable flow), capture the settled screenshot of that bot response showing the stated reason. This is the WARNING evidence — do NOT proceed to the help step for a verdict.
+LOGOUT confirmation (if supported): Complete the bot's logout workflow, wait for the acknowledgement to settle, and capture ONE settled screenshot of the bot‑level logout confirmation (e.g., "You're signed out of this bot").
+HELP while logged out (interaction): After logout, call capture_input_responses with input_field_id = the chat field and inputs = ["help"]. Wait for the bot's response to fully render and settle, then capture the settled help response showing whether functionality/commands/Sign In guidance is provided without forcing login. If the help response is taller than the viewport, scroll one section at a time and capture a SEPARATE settled screenshot per position.
+HYPERLINK hover: If the help response contains a hyperlink, hover the pointer over it and capture ONE settled screenshot showing the hand (pointer) cursor as PASS evidence of external redirection.
+Capture-only guard: Every frame must show the bot's own chat responses (logout attempt, logout confirmation, post‑logout help, hover state). Do NOT substitute the Apps store page, the empty-state landing screen, or unrelated chat content.
+These captures must be the LAST actions before reporting the verdict. Do NOT report PASS/FAIL/WARNING until the logout attempt and (if supported) the logout confirmation and post‑logout help response have all been captured and settled.
+On FAIL, ensure the settled screenshot clearly shows the dead end after logout (bot silent, or the help reply being only "Please login to continue." / "Unauthorized: Please log in"). On WARNING, ensure the screenshot shows the bot's reason for not supporting logout.
+Ensure every captured frame reflects the final rendered state, not a transitional/loading frame.
+Expected Result:
+
+The bot must provide help details while logged out (overview/guidance visible without authentication).
+Hyperlinks with a hand‑cursor on hover are valid.
+If no logout/signout workflow is supported, the outcome is WARNING with the bot's reason (if provided).
+
+Final Execution Report
+Test Case Result: [PASS / FAIL / WARNING]
+Result Rules:
+
+PASS — Logout workflow is supported and completed; after logout, help content is shown without forcing login.
+FAIL — After logout, the bot blocks help (silent or only "Please login to continue").
+WARNING — The bot does not support an in‑chat logout workflow or returns an error; include the bot's reason/explanation.
+
+Use this WARNING message:
+"Please verify login/logout workflow in other supported capabilities."
+
+Failure/Warning Reasons (If applicable):
+FAIL:
+"Post‑logout, the bot responded 'Unauthorized: Please log in' to help. Correction: Allow the help intent to bypass authentication checks."
+"No help response after logout. Ensure help is accessible while unauthenticated."
+
+WARNING:
+
+"Please verify login/logout workflow in other supported capabilities."
+
+Evidence:
+[Insert Screenshot(s): logout attempt & response, logout confirmation (if any), help response while logged out, hyperlink hover showing hand cursor]
